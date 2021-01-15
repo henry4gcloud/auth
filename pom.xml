@@ -1,123 +1,104 @@
-<?xml version="1.0" encoding="UTF-8" ?>
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+<?xml version="1.0" encoding="UTF-8"?>
+<!--
+  Copyright 2019 Google LLC
+  Licensed under the Apache License, Version 2.0 (the "License");
+  you may not use this file except in compliance with the License.
+  You may obtain a copy of the License at
+       http://www.apache.org/licenses/LICENSE-2.0
+  Unless required by applicable law or agreed to in writing, software
+  distributed under the License is distributed on an "AS IS" BASIS,
+  WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+  See the License for the specific language governing permissions and
+  limitations under the License.
+-->
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
   <modelVersion>4.0.0</modelVersion>
-  <artifactId>hello-world</artifactId>
-  <packaging>jar</packaging>
-  <name>Cloud Code Hello World for Cloud Run</name>
-  <description>Getting started with Cloud Code for Cloud Run</description>
-  <version>1.0.0</version>
+  <groupId>com.example.appengine</groupId>
+  <artifactId>springboot-helloworld-j11</artifactId>
+  <version>0.0.1-SNAPSHOT</version>
 
+  <!--
+  The parent pom defines common style checks and testing strategies for our samples.
+  Removing or replacing it should not affect the execution of the samples in anyway.
+  -->
   <parent>
-    <groupId>org.springframework.boot</groupId>
-    <artifactId>spring-boot-starter-parent</artifactId>
-    <version>2.1.4.RELEASE</version>
+      <groupId>com.google.cloud.samples</groupId>
+      <artifactId>shared-configuration</artifactId>
+      <version>1.0.21</version>
   </parent>
 
   <properties>
-    <java.version>1.8</java.version>
-    <checkstyle.config.location>./checkstyle.xml</checkstyle.config.location>
+      <maven.compiler.target>11</maven.compiler.target>
+      <maven.compiler.source>11</maven.compiler.source>
   </properties>
 
-  <!-- The Spring Cloud GCP BOM will manage spring-cloud-gcp version numbers for you. -->
   <dependencyManagement>
-    <dependencies>
-      <dependency>
-        <groupId>org.springframework.cloud</groupId>
-        <artifactId>spring-cloud-gcp-dependencies</artifactId>
-        <version>1.2.6.RELEASE</version>
-        <type>pom</type>
-        <scope>import</scope>
-      </dependency>
-    </dependencies>
+      <dependencies>
+          <dependency>
+              <!-- Import dependency management from Spring Boot -->
+              <groupId>org.springframework.boot</groupId>
+              <artifactId>spring-boot-dependencies</artifactId>
+              <version>2.4.1</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+
+          <dependency>
+              <groupId>org.springframework.cloud</groupId>
+              <artifactId>spring-cloud-dependencies</artifactId>
+              <version>2020.0.0</version>
+              <type>pom</type>
+              <scope>import</scope>
+          </dependency>
+      </dependencies>
   </dependencyManagement>
 
   <dependencies>
     <dependency>
       <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter</artifactId>
+      <artifactId>spring-boot-starter-web</artifactId>
+      <exclusions>
+        <!-- Exclude the Tomcat dependency -->
+        <exclusion>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-starter-tomcat</artifactId>
+        </exclusion>
+      </exclusions>
     </dependency>
+
     <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-jetty</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework</groupId>
-      <artifactId>spring-webmvc</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-thymeleaf</artifactId>
-    </dependency>
-    <!-- Starter for Stackriver Logging -->
-    <dependency>
-      <groupId>org.springframework.cloud</groupId>
-      <artifactId>spring-cloud-gcp-starter-logging</artifactId>
-    </dependency>
-    <dependency>
-      <groupId>com.squareup.okhttp3</groupId>
-      <artifactId>okhttp</artifactId>
-      <version>4.0.1</version>
-    </dependency>
-    <dependency>
-      <groupId>org.springframework.boot</groupId>
-      <artifactId>spring-boot-starter-test</artifactId>
-      <scope>test</scope>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-jetty</artifactId>
+        <version>2.4.1</version>
     </dependency>
   </dependencies>
+
   <build>
     <plugins>
       <plugin>
+          <groupId>org.springframework.boot</groupId>
+          <artifactId>spring-boot-maven-plugin</artifactId>
+          <version>2.4.1</version>
+          <executions>
+              <execution>
+                  <goals>
+                      <goal>repackage</goal>
+                  </goals>
+              </execution>
+          </executions>
+      </plugin>
+
+      <plugin>
         <groupId>com.google.cloud.tools</groupId>
-        <artifactId>jib-maven-plugin</artifactId>
-        <version>2.7.0</version>
-      </plugin>
-      <plugin>
-        <groupId>org.springframework.boot</groupId>
-        <artifactId>spring-boot-maven-plugin</artifactId>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-checkstyle-plugin</artifactId>
-        <version>3.1.1</version>
-      </plugin>
-      <plugin>
-        <groupId>org.apache.maven.plugins</groupId>
-        <artifactId>maven-surefire-plugin</artifactId>
+        <artifactId>appengine-maven-plugin</artifactId>
+        <version>2.4.0</version>
         <configuration>
-          <skipTests>true</skipTests>
+          <projectId>GCLOUD_CONFIG</projectId>
+          <version>springboot-helloworld</version>
         </configuration>
-        <executions>
-          <execution>
-            <id>unit-tests</id>
-            <phase>test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <skipTests>false</skipTests>
-              <includes>
-                <include>**/*Tests.java</include>
-              </includes>
-            </configuration>
-          </execution>
-          <execution>
-            <id>integration-tests</id>
-            <phase>integration-test</phase>
-            <goals>
-              <goal>test</goal>
-            </goals>
-            <configuration>
-              <skipTests>false</skipTests>
-              <excludes>
-                <exclude>**/*Tests.java</exclude>
-              </excludes>
-              <includes>
-                <include>**/*IT.java</include>
-              </includes>
-            </configuration>
-          </execution>
-        </executions>
       </plugin>
     </plugins>
   </build>
+
 </project>
