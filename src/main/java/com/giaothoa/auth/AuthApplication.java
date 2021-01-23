@@ -14,25 +14,19 @@
  * limitations under the License.
  */
 
-package com.example.appengine.springboot;
+package com.giaothoa.auth;
 
 // [START gae_java11_helloworld]
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.boot.web.servlet.ServletComponentScan;
 
+@ServletComponentScan
 @SpringBootApplication
-@RestController
-public class SpringbootApplication {
+public class AuthApplication {
 
   public static void main(String[] args) {
-    SpringApplication.run(SpringbootApplication.class, args);
-  }
-
-  @GetMapping("/")
-  public String hello() {
-    return "Hello world!";
+    SpringApplication.run(AuthApplication.class, args);
   }
 
 }
